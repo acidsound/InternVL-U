@@ -6,3 +6,5 @@ diffusers==0.35.1
 flash_attn==2.7.4.post1
 timm
 accelerate
+einops
+gradio

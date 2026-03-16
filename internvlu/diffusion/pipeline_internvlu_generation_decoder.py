@@ -614,9 +614,6 @@ class InternVLUDiffusionPipeline(DiffusionPipeline, StableDiffusionMixin):
 
                     latents = callback_outputs.pop("latents", latents)
                     prompt_embeds = callback_outputs.pop("prompt_embeds", prompt_embeds)
-                    negative_prompt_embeds = callback_outputs.pop(
-                        "negative_prompt_embeds", negative_prompt_embeds
-                    )
 
                 # call the callback, if provided
                 if i == len(timesteps) - 1 or (

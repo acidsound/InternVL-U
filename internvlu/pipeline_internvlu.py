@@ -51,6 +51,7 @@ DIFFUSION_KWARGS = {
     "height",
     "width",
     "generator",
+    "callback_on_step_end",
 }
 
 
@@ -453,6 +454,7 @@ class InternVLUPipeline(DiffusionPipeline):
         height=None,
         width=None,
         generator=None,
+        callback_on_step_end=None,
     ):
         """Generate images conditioned on VLM hidden states and optional inputs."""
 
@@ -482,6 +484,7 @@ class InternVLUPipeline(DiffusionPipeline):
             height=height,
             width=width,
             generator=generator,
+            callback_on_step_end=callback_on_step_end,
         ).images
 
         output = ((127.5 * output + 128.0) / 255).clamp(0, 1)
@@ -510,6 +513,7 @@ class InternVLUPipeline(DiffusionPipeline):
         height=None,
         width=None,
         generator=None,
+        callback_on_step_end=None,
         **kwargs,
     ):
         """Generate images after a text chain-of-thought expansion stage."""
@@ -599,6 +603,7 @@ class InternVLUPipeline(DiffusionPipeline):
             height=height,
             width=width,
             generator=generator,
+            callback_on_step_end=callback_on_step_end,
         ).images
         return InternVLUPipelineOutput(
             generate_output=outputs_text_ids, images=output_images

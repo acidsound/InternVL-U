@@ -1,0 +1,14 @@
+[project]
+name = "internvl-u"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "transformers>=4.52,<5",
+    "diffusers>=0.35,<0.36",
+    "accelerate",
+    "einops",
+    "gradio",
+    "timm",
+]
