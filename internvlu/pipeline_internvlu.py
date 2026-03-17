@@ -636,8 +636,11 @@ class InternVLUPipeline(DiffusionPipeline):
                 self.generation_decoder.config.gen_image_width,
             )
             height, width = call_kwargs["height"], call_kwargs["width"]
+            stride = self.processor.image_gen_processor.merge_size * self.processor.image_gen_processor.patch_size
+            gen_height, gen_width =  height // stride * stride, width // stride * stride
         else:
             height, width = None, None
+            gen_height, gen_width = None, None
 
         generation_kwargs, diffusion_kwargs, unused = self._split_kwargs(call_kwargs)
         if len(unused) > 0:
@@ -649,8 +652,8 @@ class InternVLUPipeline(DiffusionPipeline):
             generation_mode=generation_mode,
             padding=True,
             return_tensors="pt",
-            height=height,
-            width=width,
+            height=gen_height,
+            width=gen_width,
             system_prompt=system_prompt,
         )
         for k, v in inputs.items():
@@ -674,4 +677,28 @@ class InternVLUPipeline(DiffusionPipeline):
             )
         else:
             raise NotImplementedError(f"Unknown generation_mode: {generation_mode}")
+    
+        images: Union[List[Image.Image], np.ndarray] = getattr(generation_returns, "images", None)
+
+        if images is not None:
+            if isinstance(images, list):
+                generation_returns.images = [
+                    img.resize((width, height), Image.Resampling.LANCZOS)
+                    for img in images
+                ]
+            elif isinstance(images, np.ndarray):
+                if images.ndim == 3:
+                    generation_returns.images = np.array(
+                        Image.fromarray(images).resize((width, height), Image.Resampling.LANCZOS)
+                    )
+                elif images.ndim == 4:
+                    generation_returns.images = np.stack([
+                        np.array(
+                            Image.fromarray(img).resize((width, height), Image.Resampling.LANCZOS)
+                        )
+                        for img in images
+                    ])
+                else:
+                    raise ValueError(f"Unsupported images ndim: {images.ndim}")
         return generation_returns
+
